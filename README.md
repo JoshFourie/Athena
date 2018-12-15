@@ -1,2 +1,2 @@
 # Cerberus
-Research for Cerberus, secured by OP.
+Research for Cerberus, secured by OMNIA Protocol.
