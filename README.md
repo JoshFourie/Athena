@@ -1,2 +1,2 @@
 # Cerberus
-Research for Cerberus, secured by OMNIA Protocol.
+Research for Cerberus: Athena, secured by OMNIA Protocol.
