@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{apacite}
 \usepackage{enumitem}
-\setlist[enumerate]{topsep=0pt,itemsep=1ex,partopsep=0ex,parsep=1ex}
+\setlist[enumerate]{topsep=2pt,itemsep=0ex,partopsep=0.1ex,parsep=0ex}
 \setlist[itemize]{topsep=0pt, itemsep=1ex, partopsep=0ex, parsep=1ex}
 \usepackage[english]{babel}
 \usepackage{parskip}
@@ -11,11 +11,11 @@
 \setlength{\parskip}{6pt}
 \usepackage{titlesec}
 \titlespacing\section{0pt}{6pt plus 0pt minus 2pt}{6pt plus 2pt minus 2pt}
-\titlespacing\subsection{0pt}{0pt plus 0pt minus 2pt}{0pt plus 2pt minus 2pt}
-\titlespacing\subsubsection{0pt}{-2pt plus 0pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsection{0pt}{6pt plus 0pt minus 2pt}{2pt plus 2pt minus 2pt}
+\titlespacing\subsubsection{0pt}{4pt plus 0pt minus 2pt}{0pt plus 2pt minus 2pt}
 \titlespacing\paragraph{0pt} {6pt plus 0pt minus 0pt}{4pt plus 0pt minus 0pt}
 \usepackage[left=3.5cm, right=3.5cm, top=4cm]{geometry}
-\renewcommand{\baselinestretch}{1.25}
+\renewcommand{\baselinestretch}{1.15}
 \usepackage{float}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -65,7 +65,7 @@
 	tabsize=2
 }
 
-\title{\textsc{Cerberus} \\ Towards Zero-Knowledge Advertising\\
+\title{\textsc{Athena} \\ Towards Zero-Knowledge Advertising\\
 	\parskip = \baselineskip
 	\large{\textsc{Omnia Protocol}}}
 \author{Josh Fourie, josh@omniaprotocol.com}
@@ -79,26 +79,83 @@
 	\textbf{Abstract}
 	\end{center}
 
-This paper explores the prospect of a basic advertising scheme nested within applications secured by \textsc{Omnia Protocol} through aligning zero-knowledge Succinct ARguments of Knowledge (zk-SNARKS), decentralised transaction networks and Secret Handshakes. 
+This paper explores the prospect of a basic advertising scheme nested within applications secured by \textsc{Omnia Protocol} through aligning zero-knowledge Succinct ARguments of Knowledge (zk-SNARKs), decentralised transaction networks and Secret Handshakes. 
 
 \pagebreak 
 	
 	\section{Background}
 	
-		The \textsc{Omnia Protocol} minimises the imperative for private-sector firms to extract and then secure individual data by substituting the trusted transfer of \textit{data} between firms and individuals for the transfer of \textit{verifiable computations} amongst untrusted parties. We achieve this through deploying basic computations locally to individual devices tasked with iterating over the data-sets accessible through smart-phones and then producing a zk-SNARKS proof affirming the correctness of a shareable and non-identifying output with only a negligible risk of failure (0.4\%).
+		The \textsc{Omnia Protocol} minimises the imperative for private-sector firms to extract and then secure individual data by substituting the trusted transfer of \textit{data} between firms and individuals for the transfer of \textit{verifiable computations} amongst untrusted parties. We achieve this through deploying basic computations locally to individual devices tasked with iterating over the data-sets accessible through smart-phones and then producing a zk-SNARKs proof affirming the correctness of a shareable and non-identifying output with only a negligible risk of failure (0.4\%).
 		
-		Currently, the value of data is famously extracted and realised in advertising schemes that construct a digital profile from data collected whilst users engage with a service provided, in most cases, as a free product simultaneously offering compensation for the data. A sufficiently sophisticated scheme might enable a client to prove they have viewed or engaged with an advertisement targeted at their group or demographic and thereby nullify the requirement for intermediate firms to handle and secure client data as well as expand the available data for improved advertising. The  \textsc{Omnia Protocol: Cerberus} project intends to represent a simple step towards that goal.
+		Currently, the value of data is famously extracted and realised in advertising schemes that construct a digital profile from data collected whilst users engage with a service provided, in most cases, as a free product simultaneously offering compensation for the data. A sufficiently sophisticated scheme might enable a client to prove they have viewed or engaged with an advertisement targeted at their group or demographic and thereby nullify the requirement for intermediate firms to handle and secure client data as well as expand the available data for improved advertising. The  \textsc{Omnia Protocol: Athena} project intends to represent a simple step towards that goal.
 		
-		The paper will consider a basic technical model wrappable within existing pilot proposals for \textit{Employee} and \textit{Student} Wellness that establishes and then develops the core engine  as well as outlines future work and challenges for the \textsc{Cerberus} project. It assumes a general familiarity with zk-SNARKS and decentralised networks.
+		The paper will consider a basic technical model wrappable within existing pilot proposals for \textit{Employee} and \textit{Student} Wellness that establishes and then develops the core engine  as well as outlines future work and challenges for the \textsc{Athena} project. It assumes a general familiarity with zk-SNARKs and decentralised networks.
 		
-	\paragraph{Requirements.}  \textsc{Cerberus} should achieve the following amongst the Client ($\mathcal{P}$), the Advertiser ($\mathcal{V}$), and an Adversary ($\mathcal{A}$):
+	\paragraph{Requirements.}  \textsc{Athena} should achieve the following amongst the Client ($\mathcal{P}$), the Advertiser ($\mathcal{V}$), and an Adversary ($\mathcal{A}$):
 			
 			\begin{itemize}[label = $\cdot$]
 				
-				\item $\mathcal{P}$ cannot falsely substantiate a claim to to maliciously view an advertisement.
+				\item $\mathcal{P}$ cannot falsely substantiate a claim to to maliciously view an advertisement, or generate a false proof of engagement.
 				\item $\mathcal{P}$ can guarantee remuneration for every advertisement served from  $\mathcal{V}$.
 				\item $\mathcal{A}$ cannot identify individual data-inputs or leverage any other attack vectors to harm or otherwise exploit either $\mathcal{P}$ or $\mathcal{V}$.
+				\item Compromising \textsc{Athena} should not endanger individual data or incur substantial costs to either $\mathcal{P}$  or  $\mathcal{V}$.
 				
 			\end{itemize}
+	
+		Note that these should be guaranteed to a negligible probability for \textit{security} and \textit{verifiability}.
+	
+\pagebreak
+		
+	\section{System Outline}
+	
+		The client ($\mathcal{P}$) executes a computation determining their \textit{candidacy} for engaging with a particular subset of advertisements that are made available on either a public repository or through a direct communication scheme hosted by the advertiser ($\mathcal{V}$) . $\mathcal{P}$ exchanges a \textit{proof of candidacy} (PoC) for a package of relevant advertisements (the \textsc{AdPack}) that are then loaded onto their personal device, where a second layer of the proving scheme constructs a \textit{proof of engagement} (PoE) that serves as a request for remuneration exchangeable with either $\mathcal{V}$ or an intermediary vendor.
+		
+		\textsc{Athena} thereby consists of four core stages encompassed within two layers of communication between $\mathcal{P}$ and $\mathcal{V}$:
+		
+			\begin{enumerate}
+				
+				\item \textsc{Proof of Candidacy }and the exchange of the \textsc{AdPack}.
+				\item \textsc{Proof of Engagement} and remuneration.
+		
+			\end{enumerate}
+		
+		Note that $\mathcal{P}$ takes an active role that $\mathcal{V}$ is charged with reactively reciprocating. 
+		
+		\paragraph{Acronyms.} The reader should use this part as a quick-reference for the acronyms employed in the remainder of the paper:
+		
+			\begin{itemize}[label = $\cdot$]
+				
+				\item $\mathcal{P}$: The prover role  assumed by the \textit{client}.
+				\item $\mathcal{V}$: The verifier role assumed by the \textit{advertiser}.
+				\item $\mathcal{A}$: The adversary attempting to break the system as neither a prover or verifier.
+				\item \textsc{PoC}: Proof of Candidacy.
+				\item \textsc{PoE}: Proof of Engagement.
+				\item \textsc{AdPack}: A package of advertisements.
+				\item \textsc{Orb}: Any computation verifiable with zk-SNARKs.
+				\item \textsc{zk-SNARKs}: zero-knowledge Succinct ARguments of Knowledge.
+				\item \textsc{qap}: Quadratic Arithmetic Program proposed in 2013 by Gennaro et al.
+				
+			\end{itemize}
+		
+\pagebreak
+		
+	\section{Proving Candidacy for the Advertisement}
+		
+		The \textit{candidacy} component should prevent any malicious $\mathcal{P}$ from obtaining an \textsc{AdPack} whose requirements they do not meet within a negligible probability as a byway of ensuring that advertisements are served to the target demographic specified by $\mathcal{V}$. There are two alternate schemes capable of providing such a functionality that  may be implemented based, in the first case, on extending the existing zk-SNARKs scheme to include the \textsc{PoC} computation, and in the second, on constructing a secret handshake scheme recently published in the academic literature.
+		
+		\subsection{A zk-SNARKs Implementation}
+		
+			A zk-SNARKs proofing scheme following the construction provided by Jens Groth in 2016 (\textit{'On the Size of Pairing-based Non-interactive Arguments'}) enables $\mathcal{P}$ to prove the correctness of a statement for some relation $\mathcal{R}$ with a negligible probability of a malicious party convincing $\mathcal{V}$ of the correctness of such a statement for arbitrary computations. There are a collection of existing tools of varying production readiness that would enable \textsc{Omnia Protocol} to implement the zk-SNARKs scheme.
+			
+			\paragraph{Existing Libraries.} Republic Protocol\footnote{https://github.com/republicprotocol/zksnark-rs/tree/develop} and Z-Cash Hackworks\footnote{https://github.com/zkcrypto/bellman} have both provided open-source libraries realising zk-SNARKs in \texttt{rust-lang}, but note that both are currently either non-production ready or still R\&D. We have successfully implemented a bare-bones test-API for generating a verifiable \textit{Health-Rating} from a computation iterating over data collected on smart-phones using Republic's \texttt{zkSNARK-rs} library and have not explored Hackwork's \texttt{Bellman}. The 8\_Bit Comparator and Keccak-hashing features introduced in  \texttt{zkSNARK-rs} are currently facing independent issues with the former returning only a 77\% correctness on verification and the latter hanging on the generation of a \textit{quadratic arithmetic program} from a dummy representation of the circuit - \textsc{Athena} relies on both these features for candidacy.\footnote{Note that this is at the time of writing and may not be relevant or up-to-date at the time of reading.} \footnote{The \texttt{zkSNARK-rs} comparator was tested with a loop recursively proving and verifying the same inputs.}
+			
+			\subsubsection{Zero-Knowledge 8-Bit Comparator}
+		
+				Candidacy requires that $\mathcal{P}$ proves membership of a group manifesting a set of characteristics ($C_{char}$) defined by $\mathcal{V}$ as being  within a desired \textit{range}, denoted as $\mathcal{P} \in C_{char}$. The comparator is capable of proving that $\gamma > \alpha$ or $\gamma < \beta$ packaged within \texttt{zkSNARK-rs} as a \texttt{test\_program}, which provides the fundamental component for proving that $\gamma$ belongs to a range such that $\alpha < \gamma < \beta$. The library provides a circuit for constructing the \textsc{qap} required for a single 8-bit comparator parsed in the \texttt{.zk} program, but this does not extend to a range, which inherently requires at least two-comparators. Moreover, membership of a target group would, in most instances, require $\mathcal{P}$ to prove that they possess characteristics nested within multiple distinct ranges. Currently, the comparator must be extended for \textsc{Athena} to prove that $\mathcal{P}$ knows \textit{many smaller} weights, such that when computations determining characteristics from the individual data-set are executed and collated, $\mathcal{P} \in C_{char}$.
+				
+\pagebreak
+						
+					\paragraph{Extending the Comparator.} A zk-SNARK verifies the correctness of arbitrary polynomial constructions parsed down from a common computation in the form of a \textit{quadratic arithmetic program} which is constructed in \texttt{zkSNARK-rs} natively within \texttt{rust-lang} or through the ASTParser operating over the \texttt{.zk} code. 
+				
 		
 \end{document}

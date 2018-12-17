@@ -12,8 +12,9 @@ use std::path::Path;
 use serde_json::{to_string, from_str};
 
 pub struct CommonReference {
-    sg1: SigmaG1<Z251>,
-    sg2: SigmaG2<Z251>,
+    pub qap: QAP<CoefficientPoly<Z251>>,
+    pub sg1: SigmaG1<Z251>,
+    pub sg2: SigmaG2<Z251>,
 }
 
 impl CommonReference {
@@ -47,6 +48,9 @@ impl CommonReference {
 
     pub fn read() -> Self {
         println!("Reading CRS...");
+        let qap : QAP<CoefficientPoly<Z251>> = from_str(
+            &read_to_string("src/common_reference/QAP.json").unwrap()
+        ).unwrap();
         let sg1 : SigmaG1<Z251> = from_str(
             &read_to_string("src/common_reference/SigmaG1.json").unwrap()
         ).unwrap();
@@ -55,6 +59,7 @@ impl CommonReference {
         ).unwrap();
         println!("Returning CRS...");
         Self {
+            qap,
             sg1,
             sg2
         }
@@ -72,7 +77,9 @@ impl CommonReference {
         }
 
         let code = read_to_string("src/common_reference/8bit_comparator.zk").unwrap();
-        let qap: QAP<CoefficientPoly<Z251>> = ASTParser::try_parse(&code).unwrap().into();
+        let qap : QAP<CoefficientPoly<Z251>> = from_str(
+            &read_to_string("src/common_reference/QAP.json").unwrap()
+        ).unwrap();
         println!("Built 'comparator_test' dependencies... Testing...");
         let mut passed = 0;
         for _ in 0..1000 {
