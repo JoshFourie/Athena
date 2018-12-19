@@ -21,7 +21,7 @@ impl CommonReference {
 
     pub fn new() {
         println!("Building dependencies for a new common-reference string...");
-        let code = read_to_string("src/common_reference/8bit_comparator.zk").unwrap();
+        let code = read_to_string("src/common_reference/statement_range.zk").unwrap();
         let qap: QAP<CoefficientPoly<Z251>> = ASTParser::try_parse(&code).unwrap().into();
         let (sg1, sg2) = groth16::setup(&qap);
         println!("Ok. Built CRS... Writing to file.");
@@ -75,35 +75,39 @@ impl CommonReference {
             }
             bits
         }
-
-        let code = read_to_string("src/common_reference/8bit_comparator.zk").unwrap();
-        let qap : QAP<CoefficientPoly<Z251>> = from_str(
-            &read_to_string("src/common_reference/QAP.json").unwrap()
-        ).unwrap();
-        println!("Built 'comparator_test' dependencies... Testing...");
         let mut passed = 0;
+        println!("Testing...");
         for _ in 0..1000 {
+            let code = read_to_string("src/common_reference/statement_range.zk").unwrap();
+            let qap : QAP<CoefficientPoly<Z251>> = from_str(
+                &read_to_string("src/common_reference/QAP.json").unwrap()
+            ).unwrap();
             let sigmag1: SigmaG1<Z251> = from_str(
                 &read_to_string("src/common_reference/SigmaG1.json").unwrap()
             ).unwrap();
             let sigmag2: SigmaG2<Z251> = from_str(
                 &read_to_string("src/common_reference/SigmaG2.json").unwrap()
             ).unwrap();
-            let (a_bits, b_bits) = (to_bits(1 as u8), to_bits(2 as u8));
+            let (a_bits, b1_bits, b2_bits) = (
+                to_bits(0 as u8), 
+                to_bits(1 as u8),
+                to_bits(3 as u8)
+            );
             let assignments = a_bits
                 .iter()
-                .chain(b_bits.iter())
+                .chain(b1_bits.iter()
+                .chain(b2_bits.iter()))
                 .map(|&bit| Z251::from(bit as usize))
                 .collect::<Vec<_>>();
-            let weights = groth16::weights(&code, &assignments).unwrap();
+            let weights = groth16::weights(&code, &assignments).unwrap();    
             let proof = groth16::prove(&qap, (&sigmag1, &sigmag2), &weights);
-            // a > b
-            let mut inputs = vec![Z251::from(1)];
+            let mut inputs = vec![Z251::from(1), Z251::from(0)];
             inputs.append(
-                &mut b_bits
+                &mut b1_bits
                     .iter()
+                    .chain(b2_bits.iter())
                     .map(|&bit| Z251::from(bit as usize))
-                    .collect::<Vec<_>>(),
+                    .collect::<Vec<_>>()
             );
             let outcome = groth16::verify::<CoefficientPoly<Z251>, _, _, _, _>(
                 (sigmag1, sigmag2),
@@ -114,11 +118,12 @@ impl CommonReference {
                 false => passed = passed + 1,
                 true => {}
             };
+            println!("{}", outcome);
         }
-        match passed == 1000 {
+        match passed == 2500 {
             true => Ok(true),
             false => Ok(false),
             _ => Err(())
         }
-    }
+    }      
 }
