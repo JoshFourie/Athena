@@ -10,7 +10,7 @@ use serde_json::{to_string, from_str};
 use serde_derive::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct Orb{
+pub struct Orb {
     pub tag: Vec<u8>,
     pub proof: Proof<Z251, Z251>,
 }
@@ -23,13 +23,7 @@ pub struct CommonReference {
 }
 
 impl CommonReference {
-    pub fn new() {
-        let paths = [
-            Path::new("src/zero_lib/common_reference/statement.zk"),
-            Path::new("src/zero_lib/common_reference/files/athena_qap.json"),
-            Path::new("src/zero_lib/common_reference/files/athena_sg1.json"),
-            Path::new("src/zero_lib/common_reference/files/athena_sg2.json")
-        ];
+    pub fn new(paths: [&Path; 4]) {
         let qap: QAP<CoefficientPoly<Z251>> = ASTParser::try_parse(
             &read_to_string(paths[0]).unwrap()
         ).unwrap().into();
@@ -44,13 +38,7 @@ impl CommonReference {
             to_string(&sg2).unwrap().as_bytes()
         ).unwrap();
     }
-    pub fn read() -> Self {
-        let paths = [
-            Path::new("src/zero_lib/common_reference/statement.zk"),
-            Path::new("src/zero_lib/common_reference/files/athena_qap.json"),
-            Path::new("src/zero_lib/common_reference/files/athena_sg1.json"),
-            Path::new("src/zero_lib/common_reference/files/athena_sg2.json")
-        ];
+    pub fn read(paths: [&Path; 4]) -> Self {
         let code = read_to_string(paths[0]).unwrap().as_bytes().to_vec();
         let qap : QAP<CoefficientPoly<Z251>> = from_str(
             &read_to_string(paths[1]).unwrap()
@@ -76,8 +64,8 @@ pub trait IntoInnerField {
 }
 
 pub trait Knowledgeable {
-    fn new(witness: Vec<u8>, variables: Vec<u8>, tag: Vec<u8>) -> Self;
-    fn check(self, verify_num: Vec<u8>, verify_bits: Vec<u8>) -> bool;
+    fn new(witness: Vec<u8>, variables: Vec<u8>, tag: Vec<u8>, paths: [&Path; 4]) -> Self;
+    fn check(self, verify_num: Vec<u8>, verify_bits: Vec<u8>, paths: [&Path; 4]) -> bool;
     fn as_bits(&self) -> Vec<u8>;
 } 
 
@@ -103,8 +91,8 @@ impl IntoInnerField for Vec<u8> {
 }
 
 impl Knowledgeable for Orb {
-    fn new(witness: Vec<u8>, variables: Vec<u8>,tag: Vec<u8>) -> Self {
-        let crs = CommonReference::read();
+    fn new(witness: Vec<u8>, variables: Vec<u8>,tag: Vec<u8>, paths: [&Path; 4]) -> Self {
+        let crs = CommonReference::read(paths);
         let mut assignments = witness.collect_as_field();
         assignments.append(
             &mut variables.collect_as_field()
@@ -122,8 +110,8 @@ impl Knowledgeable for Orb {
             ) 
         }
     }
-    fn check(self, verify_num: Vec<u8>, verify_bits: Vec<u8>) -> bool {
-        let crs = CommonReference::read();
+    fn check(self, verify_num: Vec<u8>, verify_bits: Vec<u8>, paths: [&Path; 4]) -> bool {
+        let crs = CommonReference::read(paths);
         let mut inputs = verify_num.into_iter()
             .map(|num: u8| Z251::from(num as usize))
             .collect::<Vec<_>>();
@@ -141,50 +129,25 @@ impl Knowledgeable for Orb {
 }
 
 #[test]
-#[ignore]
-fn comparator_test_clone() {
-    let witness = vec![3];
-    let variables = vec![1, 6];
-    let verify_num = vec![1, 0];
-    let verify_bits = vec![1, 6];
-    let crs = CommonReference::read();
-    let mut assignments = witness.collect_as_field();
-    assignments.append(
-        &mut variables.collect_as_field()
-    );
-    let weights = groth16::weights(
-        std::str::from_utf8(crs.code.as_slice()).unwrap(), 
-        &assignments
-    ).unwrap();    
-    let proof = groth16::prove(
-        &crs.qap,
-        (&crs.sg1, &crs.sg2),
-        &weights
-    );
-    let mut inputs = verify_num.into_iter()
-        .map(|num: u8| Z251::from(num as usize))
-        .collect::<Vec<_>>();
-    inputs.append(&mut verify_bits.collect_as_field());
-    println!("{}", groth16::verify::<CoefficientPoly<Z251>, _, _, _, _>(
-        (crs.sg1, crs.sg2),
-        &inputs,
-        proof
-        )
-    );
-}
-
-#[test]
-fn test_new_orb() {
+fn test_orb_knowledge {
+    let paths = [
+        Path::new("src/zero_lib/common_reference/athena_statement.zk"),
+        Path::new("src/zero_lib/common_reference/files/athena_qap.json"),
+        Path::new("src/zero_lib/common_reference/files/athena_sg1.json"),
+        Path::new("src/zero_lib/common_reference/files/athena_sg2.json")
+    ];
     for _ in 0..25 {
         assert_eq!(
             true, 
             Orb::new(
                 vec![10],
                 vec![5, 15],
-                b"Athenian".to_vec()
+                b"Athenian".to_vec(),
+                paths.clone()
             ).check(
                 vec![1, 0],
-                vec![5, 15]
+                vec![5, 15],
+                paths.clone()
             )   
         );
         assert_eq!(
@@ -192,10 +155,12 @@ fn test_new_orb() {
             Orb::new(
                 vec![20],
                 vec![5, 15],
-                b"Athenian".to_vec()
+                b"Athenian".to_vec(),
+                paths.clone()
             ).check(
                 vec![1, 0],
-                vec![5, 15]
+                vec![5, 15],
+                paths.clone()
             )  
         );
         assert_eq!(
@@ -203,10 +168,12 @@ fn test_new_orb() {
             Orb::new(
                 vec![0],
                 vec![5, 15],
-                b"Athenian".to_vec()
+                b"Athenian".to_vec(),
+                paths.clone()
             ).check(
                 vec![1, 0],
-                vec![5, 15]
+                vec![5, 15],
+                paths.clone()
             )  
         );
         assert_eq!(
@@ -214,10 +181,12 @@ fn test_new_orb() {
             Orb::new(
                 vec![10],
                 vec![5, 20],
-                b"Athenian".to_vec()
+                b"Athenian".to_vec(),
+                paths.clone()
             ).check(
                 vec![1, 0],
-                vec![5, 15]
+                vec![5, 15],
+                paths.clone()
             )  
         );
         assert_eq!(
@@ -225,10 +194,12 @@ fn test_new_orb() {
             Orb::new(
                 vec![12],
                 vec![10, 15],
-                b"Athenian".to_vec()
+                b"Athenian".to_vec(),
+                paths.clone()
             ).check(
                 vec![1, 0],
-                vec![5, 15]
+                vec![5, 15],
+                paths.clone()
             )  
         );
     }
