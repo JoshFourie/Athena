@@ -135,7 +135,7 @@ impl Knowledgeable for AthenianOrb {
         paths: [&Path; 4]
     ) -> Self {
         let crs = CommonReference::read(paths);
-        match (witness_num, variable_num, witness_bits, variable_bits
+        let assignments = match (witness_num, variable_num, witness_bits, variable_bits
             ){
             (Some(witness_num), Some(variable_num), Some(witness_bits), Some(variable_bits)
             ) => {
@@ -148,20 +148,7 @@ impl Knowledgeable for AthenianOrb {
                 );
                 assignments.append(&mut witness_bits.collect_as_field().unwrap());
                 assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (Some(witness_num), Some(variable_num), Some(witness_bits), None
             ) => {
@@ -173,20 +160,7 @@ impl Knowledgeable for AthenianOrb {
                     .collect::<Vec<_>>()
                 );
                 assignments.append(&mut witness_bits.collect_as_field().unwrap());
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (Some(witness_num), Some(variable_num), None, None
             ) => {
@@ -197,40 +171,14 @@ impl Knowledgeable for AthenianOrb {
                     .map(|num: u8| Z251::from(num as usize))
                     .collect::<Vec<_>>()
                 );
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (Some(witness_num), None, None, None
             ) => {
                 let assignments = witness_num.into_iter()
                     .map(|num: u8| Z251::from(num as usize))
                     .collect::<Vec<_>>();
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                    assignments
             },
             (None, Some(variable_num), Some(witness_bits), Some(variable_bits)
             ) => {
@@ -239,39 +187,13 @@ impl Knowledgeable for AthenianOrb {
                     .collect::<Vec<_>>();
                 assignments.append(&mut witness_bits.collect_as_field().unwrap());
                 assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (None, None, Some(witness_bits), Some(variable_bits)
             ) => {
                 let mut assignments = witness_bits.collect_as_field().unwrap();
                 assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (Some(witness_num), None, Some(witness_bits), None
             ) => {
@@ -279,20 +201,7 @@ impl Knowledgeable for AthenianOrb {
                     .map(|num: u8| Z251::from(num as usize))
                     .collect::<Vec<_>>();
                 assignments.append(&mut witness_bits.collect_as_field().unwrap());
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (Some(witness_num), None, None, Some(variable_bits)
             ) => {
@@ -300,20 +209,7 @@ impl Knowledgeable for AthenianOrb {
                     .map(|num: u8| Z251::from(num as usize))
                     .collect::<Vec<_>>();
                 assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (Some(witness_num), None, Some(witness_bits), Some(variable_bits)
             ) => {
@@ -322,20 +218,7 @@ impl Knowledgeable for AthenianOrb {
                     .collect::<Vec<_>>();
                 assignments.append(&mut witness_bits.collect_as_field().unwrap());
                 assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (Some(witness_num), Some(variable_num), None, Some(variable_bits)
             ) => {
@@ -347,58 +230,33 @@ impl Knowledgeable for AthenianOrb {
                     .collect::<Vec<_>>()
                 );
                 assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (None, None, None, Some(variable_bits)
             ) => {
                 let assignments = variable_bits.collect_as_field().unwrap();
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (None, None, Some(witness_bits), None
             ) => {
                 let assignments = witness_bits.collect_as_field().unwrap();
-                let weights = groth16::weights(
-                    std::str::from_utf8(
-                        crs.code.as_slice()
-                    ).unwrap(), 
-                    &assignments
-                ).unwrap();    
-                Self {
-                    tag: tag,
-                    proof: groth16::prove(
-                        &crs.qap,
-                        (&crs.sg1, &crs.sg2),
-                        &weights
-                    ) 
-                }
+                assignments
             },
             (_, _, _, _) => panic!("Not yet implemnted."),         
+        };
+        let weights = groth16::weights(
+            std::str::from_utf8(
+                crs.code.as_slice()
+            ).unwrap(), 
+            &assignments
+        ).unwrap();    
+        Self {
+            tag: tag,
+            proof: groth16::prove(
+                &crs.qap,
+                (&crs.sg1, &crs.sg2),
+                &weights
+            ) 
         }
     }
     fn check(self, verify_num: Vec<u8>, verify_bits: Option<Vec<u8>>, paths: [&Path; 4]) -> bool {
