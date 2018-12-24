@@ -5,7 +5,12 @@ extern crate serde_derive;
 extern crate serde;
 extern crate serde_json;
 pub mod zero_orb;
+pub mod handler;
 
+use std::path::Path;
+use crate::zero_orb::*;
+
+// ALTERNATE LIB IF DYL CANNOT PASS A SOME VALUE.
 #[test]
 fn test_athenian_knowledge() {
     for _ in 0..100 {
@@ -56,7 +61,7 @@ fn test_athenian_knowledge() {
             )
         );
         assert_eq!(
-            true, 
+            false, 
             test(
                 [12, 10, 15, 1, 0, 5, 15],
                 paths.clone()

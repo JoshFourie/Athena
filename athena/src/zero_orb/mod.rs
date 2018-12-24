@@ -11,7 +11,7 @@ use serde_json::{to_string, from_str};
 use serde_derive::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct AthenianOrb {
+pub struct PilotOrb {
     pub tag: Vec<u8>,
     pub proof: Proof<Z251, Z251>,
 }
@@ -118,132 +118,22 @@ impl IntoInnerField for Option<Vec<u8>> {
 
 pub trait Knowledgeable {
     fn new(
-        witness_num: Option<Vec<u8>>, variable_num: Option<Vec<u8>>,
-        witness_bits: Option<Vec<u8>>, variable_bits: Option<Vec<u8>>, 
+        witness_bits: Vec<u8>, variable_bits: Vec<u8>, 
         tag: Vec<u8>, paths: [&Path; 4]) -> Self;
-    fn check(self, verify_num: Vec<u8>, verify_bits: Option<Vec<u8>>, paths: [&Path; 4]) -> bool;
+    fn check(self, verify_num: Vec<u8>, verify_bits: Vec<u8>, paths: [&Path; 4]) -> bool;
     fn as_bits(&self) -> Vec<u8>;
 }
 
-impl Knowledgeable for AthenianOrb {
+impl Knowledgeable for PilotOrb {
     fn new(
-        witness_num: Option<Vec<u8>>, 
-        variable_num: Option<Vec<u8>>,
-        witness_bits: Option<Vec<u8>>, 
-        variable_bits: Option<Vec<u8>>, 
+        witness_bits: Vec<u8>, 
+        variable_bits: Vec<u8>, 
         tag: Vec<u8>, 
         paths: [&Path; 4]
     ) -> Self {
         let crs = CommonReference::read(paths);
-        let assignments = match (witness_num, variable_num, witness_bits, variable_bits
-            ){
-            (Some(witness_num), Some(variable_num), Some(witness_bits), Some(variable_bits)
-            ) => {
-                let mut assignments = witness_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                assignments.append(&mut variable_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>()
-                );
-                assignments.append(&mut witness_bits.collect_as_field().unwrap());
-                assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                assignments
-            },
-            (Some(witness_num), Some(variable_num), Some(witness_bits), None
-            ) => {
-                let mut assignments = witness_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                assignments.append(&mut variable_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>()
-                );
-                assignments.append(&mut witness_bits.collect_as_field().unwrap());
-                assignments
-            },
-            (Some(witness_num), Some(variable_num), None, None
-            ) => {
-                let mut assignments = witness_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                assignments.append(&mut variable_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>()
-                );
-                assignments
-            },
-            (Some(witness_num), None, None, None
-            ) => {
-                let assignments = witness_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                    assignments
-            },
-            (None, Some(variable_num), Some(witness_bits), Some(variable_bits)
-            ) => {
-                let mut assignments = variable_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                assignments.append(&mut witness_bits.collect_as_field().unwrap());
-                assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                assignments
-            },
-            (None, None, Some(witness_bits), Some(variable_bits)
-            ) => {
-                let mut assignments = witness_bits.collect_as_field().unwrap();
-                assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                assignments
-            },
-            (Some(witness_num), None, Some(witness_bits), None
-            ) => {
-                let mut assignments = witness_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                assignments.append(&mut witness_bits.collect_as_field().unwrap());
-                assignments
-            },
-            (Some(witness_num), None, None, Some(variable_bits)
-            ) => {
-                  let mut assignments = witness_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                assignments
-            },
-            (Some(witness_num), None, Some(witness_bits), Some(variable_bits)
-            ) => {
-                  let mut assignments = witness_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                assignments.append(&mut witness_bits.collect_as_field().unwrap());
-                assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                assignments
-            },
-            (Some(witness_num), Some(variable_num), None, Some(variable_bits)
-            ) => {
-                let mut assignments = witness_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                assignments.append(&mut variable_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>()
-                );
-                assignments.append(&mut variable_bits.collect_as_field().unwrap());
-                assignments
-            },
-            (None, None, None, Some(variable_bits)
-            ) => {
-                let assignments = variable_bits.collect_as_field().unwrap();
-                assignments
-            },
-            (None, None, Some(witness_bits), None
-            ) => {
-                let assignments = witness_bits.collect_as_field().unwrap();
-                assignments
-            },
-            (_, _, _, _) => panic!("Not yet implemnted."),         
-        };
+        let mut assignments = witness_bits.collect_as_field().unwrap();
+        assignments.append(&mut variable_bits.collect_as_field().unwrap());
         let weights = groth16::weights(
             std::str::from_utf8(
                 crs.code.as_slice()
@@ -259,31 +149,17 @@ impl Knowledgeable for AthenianOrb {
             ) 
         }
     }
-    fn check(self, verify_num: Vec<u8>, verify_bits: Option<Vec<u8>>, paths: [&Path; 4]) -> bool {
+    fn check(self, verify_num: Vec<u8>, verify_bits: Vec<u8>, paths: [&Path; 4]) -> bool {
         let crs = CommonReference::read(paths);
-        match verify_bits {
-            Some(_) => {
-                let mut inputs = verify_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                inputs.append(&mut verify_bits.collect_as_field().unwrap());
-                return groth16::verify::<CoefficientPoly<Z251>, _, _, _, _>(
-                    (crs.sg1, crs.sg2),
-                    &inputs,
-                    self.proof
-                )
-            },
-            None => {
-                let inputs = verify_num.into_iter()
-                    .map(|num: u8| Z251::from(num as usize))
-                    .collect::<Vec<_>>();
-                return groth16::verify::<CoefficientPoly<Z251>, _, _, _, _>(
-                    (crs.sg1, crs.sg2),
-                    &inputs,
-                    self.proof
-                )
-            },
-        };
+        let mut inputs = verify_num.into_iter()
+                .map(|num: u8| Z251::from(num as usize))
+                .collect::<Vec<_>>();
+        inputs.append(&mut verify_bits.collect_as_field().unwrap());
+        groth16::verify::<CoefficientPoly<Z251>, _, _, _, _>(
+            (crs.sg1, crs.sg2),
+            &inputs,
+            self.proof
+        )
     }
     fn as_bits(&self) -> Vec<u8> {
         let string = to_string(&self).unwrap();
