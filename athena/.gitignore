@@ -1,9 +1,0 @@
-.vscode
-/target
-**/*.rs.bk
-Cargo.lock
-/pkg
-/bin
-*.log
-.envrc
-.direnv*

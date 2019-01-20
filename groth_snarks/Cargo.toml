@@ -1,0 +1,7 @@
+[package]
+name = "groth_snarks"
+version = "0.1.0"
+authors = ["JoshFourie <josh@omniaprotocol.com>"]
+edition = "2018"
+
+[dependencies]

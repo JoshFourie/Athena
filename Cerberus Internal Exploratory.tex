@@ -1,7 +1,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
-\usepackage{apacite}
 \usepackage{enumitem}
 \setlist[enumerate]{topsep=2pt,itemsep=0ex,partopsep=0.1ex,parsep=0ex}
 \setlist[itemize]{topsep=0pt, itemsep=1ex, partopsep=0ex, parsep=1ex}
@@ -155,7 +154,19 @@ This paper explores the prospect of a basic advertising scheme nested within app
 				
 \pagebreak
 						
-					\paragraph{Extending the Comparator.} A zk-SNARK verifies the correctness of arbitrary polynomial constructions parsed down from a common computation in the form of a \textit{quadratic arithmetic program} which is constructed in \texttt{zkSNARK-rs} natively within \texttt{rust-lang} or through the ASTParser operating over the \texttt{.zk} code. 
+					\paragraph{Extending the Comparator.} A zk-SNARK verifies the correctness of arbitrary polynomial constructions parsed down from a common computation in the form of a \textit{quadratic arithmetic program} which is constructed in \texttt{zkSNARK-rs} natively within \texttt{rust-lang} or through the ASTParser operating over the \texttt{.zk} code. The comparator is trivially extended to 16-bit through line duplication within the \texttt{.zk} program and the introduction of an additional set of variables. Note that there is potentially an alternate implementation that provides improved efficiency which relies on the analytical representation of the XOR gates with some additional augmentation, however, exploring this is unecessary for the interim. 
+					
+					The \texttt{.zk}-based comparator is currently limited to a pseudo-logic-gate instantiation that operates over a bit-representation of some unsigned number, and cannot be efficiently wrapped into a more complex algorithm that satsifies the 'many smaller weights' requirements. $\mathcal{P}$ may circumnavigate this through running a parallel computation prior to the \texttt{zk-SNARK} generation responsible for deriving the outcome of the \textsc{orb} (i.e. determining a health-outcome) which is then fed intothe \texttt{.zk} program alongside the smaller weights, effectively wrapping two separate \texttt{zk-code} programs within the one to minimise verifier complexity.
+					
+			\subsubsection{Zero-Knowledge SHA-3 Hashing}
+			
+				Republic protocol has implemented a \texttt{zk-hashing} functionality within \texttt{zkSNARK-rs} that extends Groth16 and enables $\mathcal{P}$ to publicly prove that a SHA-3 digest has been correctly composed from an unknown input. The hashing enables $\mathcal{P}$ to construct a proof of knowledge for any digestable value, that is, for any variable or state that can be passed into \texttt{zkSNARK-rs} as a referenced slice (\&[u8]). \textsc{Athena} leverages the hashing functionality to facilitate the \textsc{PoE} by requiring that $\mathcal{V}$ encode the \textsc{AdPack} with a secret which $\mathcal{P}$ must then hash and append a \texttt{zk-SNARK} proof of correctness as evidence that the device had processed the advertisement. $\mathcal{V}$ verifies the \textsc{PoE} by requiring that $\mathcal{P}$ provides a digest matching a SHA-3 hash of the \textsc{AdPack}, and defends against $\mathcal{A}$ simply providing a matching digest through the \texttt{zk-SNARK} proof of computation. Security is achieved in the incentives model rather than in a cryptographic framework.
+						
+				\paragraph{Library Status.} The test implemented in lib.rs of the "0797ad7" git-commit currently consistently returns an incorrect 'true' bool from the \texttt{groth16::verify()} function from any $\mathcal{QAP}$ derived from \texttt{DummyRep::from(CircuitInstance)}. Moreover, constructing the $\mathcal{QAP}$ from a \texttt{DummyRep} required for the \textit{Keccak} instantiation causes the program to hang for an incredible amount of time.
+			
+			\subsubsection{Data Authenticity}
+					
+
 				
 		
 \end{document}
