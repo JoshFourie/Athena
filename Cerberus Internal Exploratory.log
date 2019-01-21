@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.1.20)  20 JAN 2019 21:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2019/dev/Debian) (preloaded format=pdflatex 2019.1.20)  21 JAN 2019 22:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -388,10 +388,10 @@ See the caption package documentation for explanation.
 
 (./Cerberus Internal Exploratory.aux) ) 
 Here is how much of TeX's memory you used:
- 6499 strings out of 494586
- 95005 string characters out of 6177802
+ 6496 strings out of 494586
+ 94943 string characters out of 6177802
  179347 words of memory out of 5000000
- 10030 multiletter control sequences out of 15000+600000
+ 10027 multiletter control sequences out of 15000+600000
  13088 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  41i,8n,38p,1287b,217s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -410,7 +410,7 @@ st/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts
 /public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publi
 c/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmtt8.pfb>
-Output written on "Cerberus Internal Exploratory.pdf" (5 pages, 188462 bytes).
+Output written on "Cerberus Internal Exploratory.pdf" (5 pages, 187474 bytes).
 PDF statistics:
  80 PDF objects out of 1000 (max. 8388607)
  57 compressed objects within 1 object stream
